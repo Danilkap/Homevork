@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Работа</title>
+</head>
+<body>
+	<script type="text/javascript">
+<?php
+$link = mysqli_connect("localhost", "root", "");
+
+if ($link == false){
+    print("Ошибка: Невозможно подключиться к MySQL " . mysqli_connect_error());
+}
+else {
+    print("Соединение установлено успешно");
+}
+?>
+
+<?php
+$link = mysqli_connect("localhost", "root", "");
+
+$sql = 'INSERT INTO cities SET name = "Санкт-Петербург"';
+$result = mysqli_query($link, $sql);
+
+if ($result == false) {
+    print("Произошла ошибка при выполнении запроса");
+}
+  ?>
+
+<?php
+$link = mysqli_connect("localhost", "root", "");
+
+if ($link == false){
+    print("Ошибка: Невозможно подключиться к MySQL " . mysqli_connect_error());
+}
+else {
+    $sql = 'INSERT INTO cities SET name = "Санкт-Петербург"';
+    $result = mysqli_query($link, $sql);
+
+    if ($result == false) {
+        print("Произошла ошибка при выполнении запроса");
+    }
+    else {
+        $city_id = mysqli_insert_id($link);
+
+        $sql = 'INSERT INTO weather_log SET city_id = ' . $city_id . ', day = "2017-09-03", temperature = 10, cloud = 1';
+
+        $result = mysqli_query($link, $sql);
+
+        if ($result == false) {
+            print("Произошла ошибка при выполнении запроса");
+        }
+    }
+}
+ ?>
+
+<?php
+
+$sql = 'SELECT id, name FROM cities';
+
+$result = mysqli_query($link, $sql);
+
+while ($row = mysqli_fetch_array($result)) {
+    print("Город: " . $row['name'] . "; Идентификатор: . " . $row['id'] . "<br>");
+}
+ ?>
+
+<?php
+
+$sql = 'SELECT id, name FROM cities';
+$result = mysqli_query($link, $sql);
+
+$rows = mysqli_fetch_all($result, MYSQLI_ASSOC)
+
+foreach ($rows as $row) {
+    print("Город: " . $row['name'] . "; Идентификатор: . " . $row['id'] . "<br>");
+}
+?>	
+
+
+<?php
+$city_id = $_GET['city_id'];
+$res = mysqli_query($link, "SELECT * FROM weather_log WHERE city_id = " . $city_id);
+ ?>
+
+ <?php
+$city_id = $_GET['city_id'];
+settype($city_id, 'integer');
+ ?>
+
+  <?php
+$city_name = $_GET['search'];
+$sql = "SELECT * FROM cities WHERE name LIKE('%$city_name%')";
+ ?>
+
+  <?php
+$city_name = mysqli_real_escape_string($link, $_GET['search']);
+$sql = "SELECT * FROM cities WHERE name LIKE('%$city_name%')";
+ ?>
+
+  <?php
+$sql = "SELECT * FROM cities WHERE name = ?";
+$stmt = mysqli_prepare($link, $sql);
+ ?>
+
+  <?php
+mysqli_stmt_bind_param($stmt, 's', $_GET['search']);
+$res = mysqli_stmt_get_result($stmt);
+
+// чтение данных
+while ($row = mysqli_fetch_assoc($res)) {
+    // ассоциативный массив с очередной записью из результата
+    var_dump($row);
+}
+ ?>
+</script>
+</body>
+</html>
